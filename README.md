@@ -1,2 +1,2 @@
-# mkupsu
+# Mikko Kupsu
 My personal public repository

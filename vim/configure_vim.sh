@@ -12,19 +12,17 @@ GIT_PACKAGE="${GIT}"
 
 FLAKE8=flake8
 FLAKE8_INSTALLED="which ${FLAKE8}"
-FLAKE8_PACKAGE="${FLAKE8}"
+FLAKE8_PACKAGE="python-${FLAKE8}"
 
 VIM_RC=~/.vimrc
 VIM_HOME=~/.vim
 VIM_BUNDLE_DIR="${VIM_HOME}"/bundle
 VIM_SYNTAX_DIR="${VIM_HOME}"/syntax
 VIM_AUTOLOAD_DIR="${VIM_HOME}"/autoload
+VIM_FTPLUGIN_DIR="${VIM_HOME}"/ftplugin
 
 PATHOGEN=pathogen.vim
 PATHOGEN_SRC=https://tpo.pe/pathogen.vim
-
-ULTISNIPS=ultisnips
-ULTISNIPS_SRC=https://github.com/SirVer/ultisnips.git
 
 INDENTLINE=indentLine
 INDENTLINE_SRC=https://github.com/Yggdroot/indentLine.git
@@ -35,14 +33,23 @@ DELIMITMATE_SRC=https://github.com/Raimondi/delimitMate.git
 PIGVIM=pig.vim
 PIGVIM_SRC=https://github.com/vim-scripts/pig.vim.git
 
-SYNTASTIC=syntastic
-SYNTASTIC_SRC=https://github.com/scrooloose/syntastic
+JEDI=jedi
+JEDI_SRC=https://github.com/davidhalter/jedi-vim.git
 
-FUGITIVE=vim-fugitive
-FUGITIVE_SRC=git://github.com/tpope/vim-fugitive.git
+PYTHON_MODE=python-mode
+PYTHON_MODE_SRC=https://github.com/klen/python-mode.git
 
-NERDTREE=nerdtree
-NERDTREE_SRC=https://github.com/scrooloose/nerdtree.git
+JSHINT=jshint
+JSHINT_SRC=https://github.com/wookiehangover/jshint.vim
+
+SCALA=vim-scala
+SCALA_SRC=https://github.com/derekwyatt/vim-scala
+
+DOCKERFILE=dockerfile
+DOCKERFILE_SRC=https://github.com/ekalinin/dockerfile.vim
+
+MAKEFILE=makefile
+MAKEFILE_SRC=https://github.com/c9s/vim-makefile
 
 function install_package {
     PACKAGE=$1
@@ -51,14 +58,10 @@ function install_package {
     sudo dnf install -q -y "${PACKAGE}"
 }
 
-function enable_syntax_highlighting {
-    echo "syntax on" >> "${VIM_RC}"
-}
-
-function enable_trailing_whitespace_highlighting {
-    echo "
-:highlight ExtraWhitespace ctermbg=red guibg=red
-:match ExtraWhitespace /\s\+$/" >> "${VIM_RC}"
+function pip_install_package {
+    PACKAGE=$1
+    echo "Installing ${PACKAGE}"
+    sudo pip install --quiet --upgrade "${PACKAGE}"
 }
 
 function install_if_needed {
@@ -76,111 +79,50 @@ install_if_needed "${VIM}" "${VIM_INSTALLED}" "${VIM_PACKAGE}"
 install_if_needed "${GIT}" "${GIT_INSTALLED}" "${GIT_PACKAGE}"
 install_if_needed "${FLAKE8}" "${FLAKE8_INSTALLED}" "${FLAKE8_PACKAGE}"
 
+rm -fr "${VIM_HOME}"
+
 # Verify that vimrc exists
-touch "${VIM_RC}"
+cp vimfiles/vimrc "${VIM_RC}"
 
-# Enabling syntax higlighting
-if [ "$(grep -c '^syntax' < ${VIM_RC})" == "0" ]; then
-    enable_syntax_highlighting
-fi
-
-if [ "$(grep -c '^:match ExtraWhitespace ' < ${VIM_RC})" == "0" ]; then
-    enable_trailing_whitespace_highlighting
-fi
-
-# Verify that Vim bundle folder exists
 mkdir -p "${VIM_BUNDLE_DIR}"
-# Verify that Vim syntax folder exists
 mkdir -p "${VIM_SYNTAX_DIR}"
-# Verify that Vim autoload folder exists
 mkdir -p "${VIM_AUTOLOAD_DIR}"
+mkdir -p "${VIM_FTPLUGIN_DIR}"
 
-if [ ! -f "${VIM_AUTOLOAD_DIR}/${PATHOGEN}" ]; then
-    curl -LSso "${VIM_AUTOLOAD_DIR}/${PATHOGEN}" "${PATHOGEN_SRC}"
-    echo "execute pathogen#infect()" >> ${VIM_RC}
-fi
-
-function do_nothing {
-    :
-}
+cp vimfiles/ftplugin/* "${VIM_FTPLUGIN_DIR}"
 
 function install_plugin {
     PLUGIN_NAME="$1"
     PLUGIN_SRC="$2"
-    PLUGIN_CONF_FUNC="${3:-do_nothing}"
-    PLUGIN_SETUP_FUNC="${4:-do_nothing}"
-
 
     if [ ! -d "${VIM_BUNDLE_DIR}/${PLUGIN_NAME}" ]; then
         pushd "${VIM_BUNDLE_DIR}"
         git clone "${PLUGIN_SRC}" "${PLUGIN_NAME}"
         popd
-        ${PLUGIN_CONF_FUNC}
     else
         pushd "${VIM_BUNDLE_DIR}/${PLUGIN_NAME}"
         git pull
         popd
     fi
-
-    ${PLUGIN_SETUP_FUNC}
 }
 
-install_plugin "${ULTISNIPS}" "${ULTISNIPS_SRC}"
+curl -LSso "${VIM_AUTOLOAD_DIR}/${PATHOGEN}" "${PATHOGEN_SRC}"
 
-function configure_indentline {
-    echo "
-let g:indentLine_color_term = 239
-let g:indentLine_color_gui = '#09AA08'
-let g:indentLine_char = '│'
-set autoindent
-set expandtab
-set tabstop=4" >> "${VIM_RC}"
-}
-
-install_plugin "${INDENTLINE}" "${INDENTLINE_SRC}" "configure_indentline"
+install_plugin "${INDENTLINE}" "${INDENTLINE_SRC}"
 install_plugin "${DELIMITMATE}" "${DELIMITMATE_SRC}"
 
-function configure_pigvim {
-    echo "
-augroup filetypedetect
-  au BufNewFile,BufRead *.pig set filetype=pig syntax=pig
-augroup END" >> "${VIM_RC}"
-}
+install_plugin "${PIGVIM}" "${PIGVIM_SRC}"
+cp "${VIM_BUNDLE_DIR}/${PIGVIM}"/syntax/* "${VIM_SYNTAX_DIR}"
 
-function refresh_pigvim {
-    cp "${VIM_BUNDLE_DIR}/${PIGVIM}"/syntax/* "${VIM_SYNTAX_DIR}"
-}
+pip_install_package "${JEDI}"
+install_plugin "${JEDI}" "${JEDI_SRC}"
 
-install_plugin "${PIGVIM}" "${PIGVIM_SRC}" "configure_pigvim" "refresh_pigvim"
+install_plugin "${PYTHON_MODE}" "${PYTHON_MODE_SRC}"
 
-function configure_syntastic {
-    echo "
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+install_plugin "${JSHINT}" "${JSHINT_SRC}"
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_python_checkers = ['flake8']
-" >> "${VIM_RC}"
-}
+install_plugin "${SCALA}" "${SCALA_SRC}"
 
-install_plugin "${SYNTASTIC}" "${SYNTASTIC_SRC}" "configure_syntastic"
+install_plugin "${DOCKERFILE}" "${DOCKERFILE_SRC}"
 
-function refresh_fugitive {
-    vim -u NONE -c "helptags ${VIM_BUNDLE_DIR}/${FUGITIVE}/doc" -c q
-}
-
-install_plugin "${FUGITIVE}" "${FUGITIVE_SRC}" "refresh_fugitive"
-
-function configure_nerdtree {
-    echo ":command ND NERDTree" >> "${VIM_RC}"
-}
-
-function refresh_nerdtree {
-    vim -u NONE -c "Helptags" -c q
-}
-
-install_plugin "${NERDTREE}" "${NERDTREE_SRC}" "configure_nerdtree" "refresh_nerdtree"
+install_plugin "${MAKEFILE}" "${MAKEFILE_SRC}"

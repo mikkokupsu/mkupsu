@@ -1,0 +1,21 @@
+" Enable syntax highlighting
+syntax on
+
+" Highlight trailing whitespace with red
+:highlight ExtraWhitespace ctermbg=red guibg=red
+:match ExtraWhitespace /\s\+$/
+
+" Execute pathogen
+execute pathogen#infect()
+execute pathogen#helptags()
+
+" Enable indention character
+let g:indentLine_color_term = 239
+let g:indentLine_color_gui = '#09AA08'
+let g:indentLine_char = '│'
+
+" Filetype: pig
+augroup filetypedetect
+au BufNewFile,BufRead *.pig setf pig
+augroup END
+
