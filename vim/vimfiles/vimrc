@@ -20,3 +20,8 @@ au BufNewFile,BufRead *.pig setf pig
 " Filetype: avsc
 au BufNewFile,BufRead *.avsc setf avro-idl
 augroup END
+
+" Tab to 4 spaces
+set tabstop=4
+set shiftwidth=4
+set expandtab
