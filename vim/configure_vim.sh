@@ -51,6 +51,9 @@ DOCKERFILE_SRC=https://github.com/ekalinin/dockerfile.vim
 MAKEFILE=makefile
 MAKEFILE_SRC=https://github.com/c9s/vim-makefile
 
+AVROVIM=avrovim
+AVROVIM_SRC=https://github.com/dln/avro-vim.git
+
 function install_package {
     PACKAGE=$1
 
@@ -126,3 +129,6 @@ install_plugin "${SCALA}" "${SCALA_SRC}"
 install_plugin "${DOCKERFILE}" "${DOCKERFILE_SRC}"
 
 install_plugin "${MAKEFILE}" "${MAKEFILE_SRC}"
+
+install_plugin "${AVROVIM}" "${AVROVIM_SRC}"
+cp "${VIM_BUNDLE_DIR}/${AVROVIM}"/syntax/* "${VIM_SYNTAX_DIR}"

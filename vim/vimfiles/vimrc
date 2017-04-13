@@ -14,8 +14,9 @@ let g:indentLine_color_term = 239
 let g:indentLine_color_gui = '#09AA08'
 let g:indentLine_char = '│'
 
-" Filetype: pig
 augroup filetypedetect
+" Filetype: pig
 au BufNewFile,BufRead *.pig setf pig
+" Filetype: avsc
+au BufNewFile,BufRead *.avsc setf avro-idl
 augroup END
-
