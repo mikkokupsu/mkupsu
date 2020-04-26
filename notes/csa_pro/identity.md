@@ -1,3 +1,17 @@
+# Identity and Federation
+
+- Users and account all in AWS
+- AWS Organizations
+- Federation with SAML
+- Federation without SAML with a custom IdP
+- Federation with SSO for multiple accounts with AWS Organzations
+- Web Identity Federation
+- Cognito
+- AD on AWS
+-- Microsoft AD
+-- AD Connector
+-- Simple AD
+- AWS SSO to connect to multiple AWS Account (via Organizations) and SAML apps
 
 ## IAM Roles vs Resource Based Policy
 
@@ -55,19 +69,19 @@ Two-way forest trust means that users of either AD can access either AD. Forest 
 
 #### AWS Managed Microsoft AD
 
-Standalone or joined repository. Trust between on premesis AD. Users defined in two places. Deployed to your VPC. Seamlessly Domain Join EC2 instance. Integrations: RDS, AWS Workspaces, AWS SSO. Multi-AZ depoloyment. Supports two-way Forest trust.
+Standalone or joined repository. Trust between on premis AD. Users defined in two places. Deployed to your VPC. Seamlessly Domain Join EC2 instance. Integrations: RDS, AWS Workspaces, AWS SSO. Multi-AZ depoloyment. Supports two-way Forest trust.
 
-Connection to on premesis needs Direct Connection or VPN.
+Connection to on premis needs Direct Connection or VPN.
 
 Replication needs a self managed Microsoft AD on VPC and two-way forest trust between replica and AWS Managed Microsoft AD.
 
 #### AD Connector
 
-Proxy to on premesis AD. Users defined only on premesis. No caching. Requires also Direct Connection or VPN.
+Proxy to on premis AD. Users defined only on premis. No caching. Requires also Direct Connection or VPN.
 
 #### Simple AD
 
-AD-compatible managed directory service which can't be join with on premesis AD.
+AD-compatible managed directory service which can't be join with on premis AD.
 
 ### AWS Organizations
 
@@ -80,3 +94,11 @@ All features support SCP and invited account must accept all features.
 SCP to whitelist or blacklist IAM actions. Applied at the root, OU or account level. SCP applies to all users and groups of the account, even root. Can't restrict service linked roles. SCP must have explicit allow, default all is disabled.
 
 Reserved instances and savings plans sharing can be enabled to save costs.
+
+With AWS RAM (Resource Access Manager) you can share VPC Subnets, AWS Transit Gateway, Route53 Resolver Rules and License Manager configurations. Share VPC with multiple accounts, use RAM.
+
+### AWS SSO
+
+Multiple AWS account and 3rd party applications. Integrated to AWS Organizations and CloudTrail. Can integrate to on premise AD.
+
+AWS SSO vs AssumeRoleWithSAML - AWS SSO does not require 3rd pary IdP Login portal.

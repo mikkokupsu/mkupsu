@@ -19,6 +19,8 @@ augroup filetypedetect
 au BufNewFile,BufRead *.pig setf pig
 " Filetype: avsc
 au BufNewFile,BufRead *.avsc setf avro-idl
+" Filetype: py
+au BufNewFile,BufRead *.py setf python
 augroup END
 
 " Tab to 4 spaces

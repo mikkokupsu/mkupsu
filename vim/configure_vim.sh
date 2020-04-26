@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eu
 
@@ -30,14 +30,11 @@ INDENTLINE_SRC=https://github.com/Yggdroot/indentLine.git
 DELIMITMATE=delimitMate
 DELIMITMATE_SRC=https://github.com/Raimondi/delimitMate.git
 
+PYTHON_SYNTAX=python-syntax
+PYTHON_SYNTAX_SRC=https://github.com/vim-python/python-syntax
+
 PIGVIM=pig.vim
 PIGVIM_SRC=https://github.com/vim-scripts/pig.vim.git
-
-JEDI=jedi
-JEDI_SRC=https://github.com/davidhalter/jedi-vim.git
-
-PYTHON_MODE=python-mode
-PYTHON_MODE_SRC=https://github.com/klen/python-mode.git
 
 JSHINT=jshint
 JSHINT_SRC=https://github.com/wookiehangover/jshint.vim
@@ -114,13 +111,11 @@ curl -LSso "${VIM_AUTOLOAD_DIR}/${PATHOGEN}" "${PATHOGEN_SRC}"
 install_plugin "${INDENTLINE}" "${INDENTLINE_SRC}"
 install_plugin "${DELIMITMATE}" "${DELIMITMATE_SRC}"
 
+install_plugin "${PYTHON_SYNTAX}" "${PYTHON_SYNTAX_SRC}"
+cp "${VIM_BUNDLE_DIR}/${PYTHON_SYNTAX}"/syntax/* "${VIM_SYNTAX_DIR}"
+
 install_plugin "${PIGVIM}" "${PIGVIM_SRC}"
 cp "${VIM_BUNDLE_DIR}/${PIGVIM}"/syntax/* "${VIM_SYNTAX_DIR}"
-
-pip_install_package "${JEDI}"
-install_plugin "${JEDI}" "${JEDI_SRC}"
-
-install_plugin "${PYTHON_MODE}" "${PYTHON_MODE_SRC}"
 
 install_plugin "${JSHINT}" "${JSHINT_SRC}"
 
